@@ -5,10 +5,11 @@
   <title>AI Clinical Decision Support System</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <link rel="stylesheet" href="assets/css/main.css" />
   <style>
     :root {
       --primary: #2c6edb;
-      --primary-light: #e8f2ff;
+      --primary-dark: #1a4c9b;
       --danger: #e74c3c;
       --warning: #f39c12;
       --success: #2ecc71;
@@ -19,451 +20,186 @@
       --shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
       --border: #dde4ed;
       --text: #2c3e50;
-    }
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+      --login-gradient: linear-gradient(135deg, #2c6edb, #1a4c9b);
     }
     body {
+      margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      background-image: url("https://picsum.photos/1200/800"), linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2));
+      background-size: cover;
+      background-position: center;
     }
-    header {
-      background: linear-gradient(135deg, var(--primary), #1a4c9b);
+    .login-box {
+      width: 100%;
+      max-width: 420px;
+      background: var(--card);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .login-header {
+      background: var(--login-gradient);
       color: white;
-      padding: 18px 20px;
+      padding: 26px 24px 20px 24px;
       text-align: center;
-      box-shadow: rgba(0, 0, 0, 0.2) 0 2px 8px;
     }
-    header h1 {
+    .login-header h1 {
       margin: 0;
       font-size: 1.4rem;
       font-weight: 600;
     }
-    header p {
+    .login-header p {
       margin-top: 4px;
       font-size: 0.9rem;
       opacity: 0.9;
     }
-
-    .main {
-      max-width: 1024px;
-      margin: 20px auto;
-      padding: 0 12px;
-    }
-
-    .menu {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 20px;
-      justify-content: center;
-    }
-    .menu-btn {
-      flex: 1;
-      min-width: 180px;
-      padding: 14px 16px;
-      border-radius: 12px;
-      border: none;
-      background: var(--card);
-      color: var(--text);
-      font-weight: 500;
-      cursor: pointer;
-      box-shadow: var(--shadow);
-      transition: transform 0.15s, box-shadow 0.15s;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      gap: 6px;
-    }
-    .menu-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-    }
-    .menu-btn i {
-      font-size: 1.6rem;
-      margin-bottom: 4px;
-    }
-    .menu-btn.diabetes { color: var(--info); }
-    .menu-btn.heart    { color: var(--danger); }
-    .menu-btn.kidney   { color: var(--warning); }
-    .menu-btn.cancer   { color: var(--success); }
-
-    .card {
-      background: var(--card);
-      border-radius: 16px;
-      box-shadow: var(--shadow);
+    .login-body {
       padding: 24px;
-      margin-bottom: 20px;
-    }
-    .card h2 {
-      margin: 0 0 14px 0;
-      font-size: 1.2rem;
-      color: var(--primary);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .card h2 i {
-      font-size: 1.2rem;
-    }
-    .card p {
-      margin-bottom: 16px;
-      font-size: 0.95rem;
-      color: #555;
-    }
-
-    .form-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 14px;
-      margin: 12px 0;
     }
     label {
       display: block;
-      margin: 6px 0 4px 0;
+      margin: 8px 0 4px 0;
       font-weight: 500;
       color: #333;
-      font-size: 0.92rem;
     }
-    .form-group {
-      flex: 1;
-      min-width: 140px;
-    }
-    input, select {
+    input {
       width: 100%;
-      padding: 10px 12px;
+      padding: 11px 12px;
       border: 1px solid var(--border);
       border-radius: 8px;
       font-size: 0.95rem;
       transition: border 0.2s;
     }
-    input:focus, select:focus {
+    input:focus {
       border-color: var(--primary);
       outline: none;
     }
-
-    button {
+    .btn {
       margin-top: 14px;
-      width: 100%;
       padding: 12px 16px;
-      background: var(--primary);
-      color: white;
       border: none;
       border-radius: 8px;
-      font-size: 1rem;
+      font-size: 0.97rem;
       cursor: pointer;
       font-weight: 500;
+      width: 100%;
       transition: background 0.2s;
     }
-    button:hover {
-      background: #1a4c9b;
+    .btn-primary {
+      background: var(--primary);
+      color: white;
     }
-
-    #result {
-      margin-top: 12px;
-      padding: 12px 14px;
-      border-radius: 8px;
-      text-align: center;
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+    }
+    .btn-outline:hover {
+      background: rgba(44, 110, 219, 0.1);
+    }
+    .tabs {
+      display: flex;
+      gap: 12px;
+      margin: 16px 0 16px 0;
+      justify-content: center;
+    }
+    .tab {
+      padding: 8px 16px;
       font-size: 0.95rem;
-      font-weight: 500;
+      cursor: pointer;
+      border-radius: 8px;
+      border: 1px solid var(--border);
     }
-    .risk-high {
-      background: #ffeaea;
-      color: var(--danger);
-      border: 1px solid #ffcfd2;
+    .tab.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
     }
-    .risk-moderate {
-      background: #fff5e6;
-      color: var(--warning);
-      border: 1px solid #ffe0c2;
+    form {
+      margin-bottom: 16px;
     }
-    .risk-low {
-      background: #e8f2f5;
-      color: var(--success);
-      border: 1px solid #cfe8f0;
-    }
-
-    .disease-section {
-      display: none;
-    }
-    .active {
-      display: block;
-    }
-
-    footer {
-      margin-top: 40px;
+    .links {
       text-align: center;
-      padding: 16px 20px;
+      font-size: 0.9rem;
       color: #666;
-      font-size: 0.85rem;
-      border-top: 1px solid var(--border);
+    }
+    .links a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+    .links a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>
-      <i class="fas fa-heartbeat"></i>
-      AI Clinical Decision Support System
-    </h1>
-    <p>Early disease prediction for Diabetes, Heart, Kidney & Cancer</p>
-  </header>
-
-  <div class="main">
-    <!-- MENU -->
-    <div class="menu">
-      <button class="menu-btn diabetes active" data-page="diabetes">
-        <i class="fas fa-syringe"></i>
-        Diabetes
-      </button>
-      <button class="menu-btn heart" data-page="heart">
-        <i class="fas fa-heart"></i>
-        Heart Disease
-      </button>
-      <button class="menu-btn kidney" data-page="kidney">
-        <i class="fas fa-lungs"></i>
-        Kidney Disease
-      </button>
-      <button class="menu-btn cancer" data-page="cancer">
-        <i class="fas fa-biohazard"></i>
-        Cancer Risk
-      </button>
+  <div class="login-box">
+    <div class="login-header">
+      <h1><i class="fas fa-heartbeat"></i> AI Clinical Decision Support</h1>
+      <p>Secure clinical dashboard for doctors and patients</p>
     </div>
 
-    <!-- DIABETES -->
-    <div class="card disease-section active" id="diabetes">
-      <h2><i class="fas fa-syringe"></i> Diabetes Risk Assessment</h2>
-      <p>Enter glucose, blood pressure, age, BMI, and other health markers.</p>
+    <div class="login-body">
+      <!-- Tabs -->
+      <div class="tabs">
+        <div class="tab active" data-tab="doctor">Doctor / Organization</div>
+        <div class="tab" data-tab="patient">Patient</div>
+      </div>
 
-      <form id="form-diabetes" class="disease-form">
-        <div class="form-row">
-          <div class="form-group">
-            <label>Age</label>
-            <input type="number" name="age" required min="1" max="120" />
-          </div>
-          <div class="form-group">
-            <label>Glucose</label>
-            <input type="number" name="glucose" required min="50" max="400" />
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Blood Pressure</label>
-            <input type="number" name="bp" required min="70" max="220" />
-          </div>
-          <div class="form-group">
-            <label>BMI</label>
-            <input type="number" name="bmi" required min="10" max="60" step="0.1" />
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Insulin (optional)</label>
-            <input type="number" name="insulin" min="0" max="1000" />
-          </div>
-          <div class="form-group">
-            <label>Pregnancies (if applicable)</label>
-            <input type="number" name="pregnancies" min="0" max="20" />
-          </div>
-        </div>
-        <button type="submit">Predict Diabetes Risk</button>
+      <!-- DOCTOR LOGIN -->
+      <form id="doctor-login" class="login-form active" method="POST" action="/doctor">
+        <label><i class="fas fa-user-md"></i> Username</label>
+        <input type="text" name="username" required />
+
+        <label><i class="fas fa-lock"></i> Password</label>
+        <input type="password" name="password" required />
+
+        <button type="submit" class="btn btn-primary">Login as Doctor</button>
       </form>
-      <div id="result-diabetes" class="result"></div>
-    </div>
 
-    <!-- HEART DISEASE -->
-    <div class="card disease-section" id="heart">
-      <h2><i class="fas fa-heart"></i> Heart Disease Risk</h2>
-      <p>Enter age, cholesterol, blood pressure, and heart‑related markers.</p>
+      <!-- PATIENT LOGIN -->
+      <form id="patient-login" class="login-form" method="POST" action="/patient">
+        <label><i class="fas fa-hospital-user"></i> Patient ID</label>
+        <input type="text" name="patient_id" placeholder="e.g., P1001" required />
 
-      <form id="form-heart" class="disease-form">
-        <div class="form-row">
-          <div class="form-group">
-            <label>Age</label>
-            <input type="number" name="age" required min="1" max="120" />
-          </div>
-          <div class="form-group">
-            <label>Cholesterol (mg/dL)</label>
-            <input type="number" name="cholesterol" required min="100" max="500" />
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Blood Pressure</label>
-            <input type="number" name="bp" required min="70" max="220" />
-          </div>
-          <div class="form-group">
-            <label>Heart Rate</label>
-            <input type="number" name="heartrate" required min="40" max="200" />
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Smoking (1=yes, 0=no)</label>
-            <select name="smoking">
-              <option value="1">Yes</option>
-              <option value="0" selected>No</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Family History (1=yes, 0=no)</label>
-            <select name="family_history">
-              <option value="1">Yes</option>
-              <option value="0" selected>No</option>
-            </select>
-          </div>
-        </div>
-        <button type="submit">Predict Heart Risk</button>
+        <label><i class="fas fa-calendar-alt"></i> Date of Birth</label>
+        <input type="date" name="dob" required />
+
+        <button type="submit" class="btn btn-primary">Login as Patient</button>
       </form>
-      <div id="result-heart" class="result"></div>
-    </div>
 
-    <!-- KIDNEY DISEASE -->
-    <div class="card disease-section" id="kidney">
-      <h2><i class="fas fa-lungs"></i> Kidney Disease Risk</h2>
-      <p>Enter blood urea, creatinine, blood pressure, and other kidney markers.</p>
-
-      <form id="form-kidney" class="disease-form">
-        <div class="form-row">
-          <div class="form-group">
-            <label>Age</label>
-            <input type="number" name="age" required min="1" max="120" />
-          </div>
-          <div class="form-group">
-            <label>Blood Pressure</label>
-            <input type="number" name="bp" required min="70" max="220" />
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Blood Urea (mg/dL)</label>
-            <input type="number" name="urea" required min="10" max="300" />
-          </div>
-          <div class="form-group">
-            <label>Creatinine (mg/dL)</label>
-            <input type="number" name="creatinine" required min="0.5" max="20" step="0.1" />
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Urine Protein (low/medium/high)</label>
-            <select name="protein">
-              <option value="0">Low</option>
-              <option value="1">Medium</option>
-              <option value="2">High</option>
-            </select>
-          </div>
-        </div>
-        <button type="submit">Predict Kidney Risk</button>
-      </form>
-      <div id="result-kidney" class="result"></div>
-    </div>
-
-    <!-- CANCER RISK -->
-    <div class="card disease-section" id="cancer">
-      <h2><i class="fas fa-biohazard"></i> Cancer Risk Indicator</h2>
-      <p>Enter age, BMI, smoking status, and family history.</p>
-
-      <form id="form-cancer" class="disease-form">
-        <div class="form-row">
-          <div class="form-group">
-            <label>Age</label>
-            <input type="number" name="age" required min="1" max="120" />
-          </div>
-          <div class="form-group">
-            <label>BMI</label>
-            <input type="number" name="bmi" required min="10" max="60" step="0.1" />
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Smoking (1=yes, 0=no)</label>
-            <select name="smoking">
-              <option value="1">Yes</option>
-              <option value="0" selected>No</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Alcohol (1=yes, 0=no)</label>
-            <select name="alcohol">
-              <option value="1">Yes</option>
-              <option value="0">No</option>
-            </select>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Family History (1=yes, 0=no)</label>
-            <select name="family_history">
-              <option value="1">Yes</option>
-              <option value="0" selected>No</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Exposure (pollution, radiation, etc.)</label>
-            <select name="exposure">
-              <option value="0">Low</option>
-              <option value="1">Moderate</option>
-              <option value="2">High</option>
-            </select>
-          </div>
-        </div>
-        <button type="submit">Predict Cancer Risk</button>
-      </form>
-      <div id="result-cancer" class="result"></div>
+      <div class="links">
+        <p>Need an account? <br />
+          <a href="about.html" target="_blank">Learn about this project</a> or
+          <a href="doctor.html" target="_blank">Register as doctor (admin only)</a>
+        </p>
+      </div>
     </div>
   </div>
 
-  <footer>
-    AI‑powered Clinical Decision Support System • For Educational Use Only
-  </footer>
-
   <script>
-    // Tab switcher
-    const buttons = document.querySelectorAll(".menu-btn");
-    const sections = document.querySelectorAll(".disease-section");
+    const tabs = document.querySelectorAll(".tab");
+    const forms = document.querySelectorAll(".login-form");
 
-    buttons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        const page = btn.dataset.page;
-        sections.forEach(s => s.classList.remove("active"));
-        buttons.forEach(b => b.classList.remove("active"));
-
-        document.getElementById(page).classList.add("active");
-        btn.classList.add("active");
+    tabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+        const mode = tab.dataset.tab;
+        tabs.forEach(t => t.classList.remove("active"));
+        forms.forEach(f => f.classList.remove("active"));
+        tab.classList.add("active");
+        document.getElementById(`${mode}-login`).classList.add("active");
       });
     });
-
-    // Helper to show result
-    function showResult(formId, resultDiv, data) {
-      resultDiv.textContent = data.result || "No result";
-      resultDiv.className = "result ";
-      if (data.result?.includes("High")) resultDiv.classList.add("risk-high");
-      else if (data.result?.includes("Moderate")) resultDiv.classList.add("risk-moderate");
-      else resultDiv.classList.add("risk-low");
-    }
-
-    // Function to submit to backend
-    async function submitForm(form, formId, resultDiv) {
-      const formData = new FormData(form);
-      const BACKEND_URL = "https://ai-clinical-cdss-backend.onrender.com/predict"; // ← CHANGE TO YOUR RENDER URL
-
-      try {
-        const response = await fetch(BACKEND_URL, {
-          method: "POST",
-          body: new URLSearchParams(formData),
-        });
-
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-        const data = await response.json();
-        showResult(formId, resultDiv, data);
-      } catch (err) {
-        showResult(formId, resultDiv, {
-          result:
+  </script>
+</body>
+</html>
