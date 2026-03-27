@@ -2,74 +2,154 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>AI Clinical Decision Support</title>
+  <title>AI Clinical Decision Support System</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
   <style>
     :root {
-      --primary: #4a90e2;
+      --primary: #2c6edb;
       --primary-light: #e8f2ff;
       --danger: #e74c3c;
+      --warning: #f39c12;
       --success: #2ecc71;
+      --info: #3498db;
+      --dark: #2c3e50;
       --bg: #f4f6f9;
-      --text: #2c3e50;
       --card: #ffffff;
-      --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      --shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+      --border: #dde4ed;
+      --text: #2c3e50;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
     body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
+      padding: 0;
+    }
+    header {
+      background: linear-gradient(135deg, var(--primary), #1a4c9b);
+      color: white;
+      padding: 18px 20px;
+      text-align: center;
+      box-shadow: rgba(0, 0, 0, 0.2) 0 2px 8px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+    header p {
+      margin-top: 4px;
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    .main {
+      max-width: 1024px;
+      margin: 20px auto;
+      padding: 0 12px;
+    }
+
+    .menu {
       display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
       justify-content: center;
-      align-items: flex-start;
-      padding: 20px 10px;
     }
-    .container {
-      max-width: 480px;
-      width: 100%;
+    .menu-btn {
+      flex: 1;
+      min-width: 180px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: none;
+      background: var(--card);
+      color: var(--text);
+      font-weight: 500;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: transform 0.15s, box-shadow 0.15s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 6px;
     }
+    .menu-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+    .menu-btn i {
+      font-size: 1.6rem;
+      margin-bottom: 4px;
+    }
+    .menu-btn.diabetes { color: var(--info); }
+    .menu-btn.heart    { color: var(--danger); }
+    .menu-btn.kidney   { color: var(--warning); }
+    .menu-btn.cancer   { color: var(--success); }
+
     .card {
       background: var(--card);
       border-radius: 16px;
       box-shadow: var(--shadow);
-      padding: 28px 24px;
+      padding: 24px;
       margin-bottom: 20px;
     }
-    h1 {
-      font-size: 1.5rem;
-      margin: 0 0 8px 0;
+    .card h2 {
+      margin: 0 0 14px 0;
+      font-size: 1.2rem;
       color: var(--primary);
-      text-align: center;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    p {
-      margin: 0 0 16px 0;
+    .card h2 i {
+      font-size: 1.2rem;
+    }
+    .card p {
+      margin-bottom: 16px;
       font-size: 0.95rem;
-      text-align: center;
-      color: #444;
+      color: #555;
+    }
+
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin: 12px 0;
     }
     label {
       display: block;
-      margin: 12px 0 4px 0;
+      margin: 6px 0 4px 0;
       font-weight: 500;
       color: #333;
+      font-size: 0.92rem;
     }
-    input {
+    .form-group {
+      flex: 1;
+      min-width: 140px;
+    }
+    input, select {
       width: 100%;
       padding: 10px 12px;
-      border: 1px solid #ccc;
+      border: 1px solid var(--border);
       border-radius: 8px;
       font-size: 0.95rem;
-      box-sizing: border-box;
       transition: border 0.2s;
     }
-    input:focus {
+    input:focus, select:focus {
       border-color: var(--primary);
       outline: none;
     }
+
     button {
-      margin-top: 20px;
+      margin-top: 14px;
       width: 100%;
       padding: 12px 16px;
       background: var(--primary);
@@ -82,10 +162,11 @@
       transition: background 0.2s;
     }
     button:hover {
-      background: #357abd;
+      background: #1a4c9b;
     }
+
     #result {
-      margin-top: 16px;
+      margin-top: 12px;
       padding: 12px 14px;
       border-radius: 8px;
       text-align: center;
@@ -97,84 +178,292 @@
       color: var(--danger);
       border: 1px solid #ffcfd2;
     }
+    .risk-moderate {
+      background: #fff5e6;
+      color: var(--warning);
+      border: 1px solid #ffe0c2;
+    }
     .risk-low {
       background: #e8f2f5;
       color: var(--success);
       border: 1px solid #cfe8f0;
     }
-    .logo {
-      text-align: center;
-      margin-bottom: 12px;
+
+    .disease-section {
+      display: none;
     }
-    .logo span {
-      font-size: 1.2rem;
-      font-weight: bold;
-      color: var(--primary);
+    .active {
+      display: block;
+    }
+
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      padding: 16px 20px;
+      color: #666;
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border);
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="logo">
-      <span>AI Clinical Decision Support</span>
+  <header>
+    <h1>
+      <i class="fas fa-heartbeat"></i>
+      AI Clinical Decision Support System
+    </h1>
+    <p>Early disease prediction for Diabetes, Heart, Kidney & Cancer</p>
+  </header>
+
+  <div class="main">
+    <!-- MENU -->
+    <div class="menu">
+      <button class="menu-btn diabetes active" data-page="diabetes">
+        <i class="fas fa-syringe"></i>
+        Diabetes
+      </button>
+      <button class="menu-btn heart" data-page="heart">
+        <i class="fas fa-heart"></i>
+        Heart Disease
+      </button>
+      <button class="menu-btn kidney" data-page="kidney">
+        <i class="fas fa-lungs"></i>
+        Kidney Disease
+      </button>
+      <button class="menu-btn cancer" data-page="cancer">
+        <i class="fas fa-biohazard"></i>
+        Cancer Risk
+      </button>
     </div>
-    <div class="card">
-      <h1>Disease Risk Prediction</h1>
-      <p>Enter patient details below to get an AI‑powered risk assessment.</p>
 
-      <form id="predictionForm">
-        <label for="age">Age</label>
-        <input type="number" id="age" name="age" required min="1" max="120" />
+    <!-- DIABETES -->
+    <div class="card disease-section active" id="diabetes">
+      <h2><i class="fas fa-syringe"></i> Diabetes Risk Assessment</h2>
+      <p>Enter glucose, blood pressure, age, BMI, and other health markers.</p>
 
-        <label for="bp">Blood Pressure (mmHg)</label>
-        <input type="number" id="bp" name="bp" required min="70" max="220" />
-
-        <label for="sugar">Blood Sugar (mg/dL)</label>
-        <input type="number" id="sugar" name="sugar" required min="50" max="400" />
-
-        <button type="submit">Predict Risk</button>
+      <form id="form-diabetes" class="disease-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Age</label>
+            <input type="number" name="age" required min="1" max="120" />
+          </div>
+          <div class="form-group">
+            <label>Glucose</label>
+            <input type="number" name="glucose" required min="50" max="400" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Blood Pressure</label>
+            <input type="number" name="bp" required min="70" max="220" />
+          </div>
+          <div class="form-group">
+            <label>BMI</label>
+            <input type="number" name="bmi" required min="10" max="60" step="0.1" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Insulin (optional)</label>
+            <input type="number" name="insulin" min="0" max="1000" />
+          </div>
+          <div class="form-group">
+            <label>Pregnancies (if applicable)</label>
+            <input type="number" name="pregnancies" min="0" max="20" />
+          </div>
+        </div>
+        <button type="submit">Predict Diabetes Risk</button>
       </form>
+      <div id="result-diabetes" class="result"></div>
+    </div>
 
-      <div id="result"></div>
+    <!-- HEART DISEASE -->
+    <div class="card disease-section" id="heart">
+      <h2><i class="fas fa-heart"></i> Heart Disease Risk</h2>
+      <p>Enter age, cholesterol, blood pressure, and heart‑related markers.</p>
+
+      <form id="form-heart" class="disease-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Age</label>
+            <input type="number" name="age" required min="1" max="120" />
+          </div>
+          <div class="form-group">
+            <label>Cholesterol (mg/dL)</label>
+            <input type="number" name="cholesterol" required min="100" max="500" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Blood Pressure</label>
+            <input type="number" name="bp" required min="70" max="220" />
+          </div>
+          <div class="form-group">
+            <label>Heart Rate</label>
+            <input type="number" name="heartrate" required min="40" max="200" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Smoking (1=yes, 0=no)</label>
+            <select name="smoking">
+              <option value="1">Yes</option>
+              <option value="0" selected>No</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Family History (1=yes, 0=no)</label>
+            <select name="family_history">
+              <option value="1">Yes</option>
+              <option value="0" selected>No</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit">Predict Heart Risk</button>
+      </form>
+      <div id="result-heart" class="result"></div>
+    </div>
+
+    <!-- KIDNEY DISEASE -->
+    <div class="card disease-section" id="kidney">
+      <h2><i class="fas fa-lungs"></i> Kidney Disease Risk</h2>
+      <p>Enter blood urea, creatinine, blood pressure, and other kidney markers.</p>
+
+      <form id="form-kidney" class="disease-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Age</label>
+            <input type="number" name="age" required min="1" max="120" />
+          </div>
+          <div class="form-group">
+            <label>Blood Pressure</label>
+            <input type="number" name="bp" required min="70" max="220" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Blood Urea (mg/dL)</label>
+            <input type="number" name="urea" required min="10" max="300" />
+          </div>
+          <div class="form-group">
+            <label>Creatinine (mg/dL)</label>
+            <input type="number" name="creatinine" required min="0.5" max="20" step="0.1" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Urine Protein (low/medium/high)</label>
+            <select name="protein">
+              <option value="0">Low</option>
+              <option value="1">Medium</option>
+              <option value="2">High</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit">Predict Kidney Risk</button>
+      </form>
+      <div id="result-kidney" class="result"></div>
+    </div>
+
+    <!-- CANCER RISK -->
+    <div class="card disease-section" id="cancer">
+      <h2><i class="fas fa-biohazard"></i> Cancer Risk Indicator</h2>
+      <p>Enter age, BMI, smoking status, and family history.</p>
+
+      <form id="form-cancer" class="disease-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Age</label>
+            <input type="number" name="age" required min="1" max="120" />
+          </div>
+          <div class="form-group">
+            <label>BMI</label>
+            <input type="number" name="bmi" required min="10" max="60" step="0.1" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Smoking (1=yes, 0=no)</label>
+            <select name="smoking">
+              <option value="1">Yes</option>
+              <option value="0" selected>No</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Alcohol (1=yes, 0=no)</label>
+            <select name="alcohol">
+              <option value="1">Yes</option>
+              <option value="0">No</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Family History (1=yes, 0=no)</label>
+            <select name="family_history">
+              <option value="1">Yes</option>
+              <option value="0" selected>No</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Exposure (pollution, radiation, etc.)</label>
+            <select name="exposure">
+              <option value="0">Low</option>
+              <option value="1">Moderate</option>
+              <option value="2">High</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit">Predict Cancer Risk</button>
+      </form>
+      <div id="result-cancer" class="result"></div>
     </div>
   </div>
 
+  <footer>
+    AI‑powered Clinical Decision Support System • For Educational Use Only
+  </footer>
+
   <script>
-    document.getElementById("predictionForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
+    // Tab switcher
+    const buttons = document.querySelectorAll(".menu-btn");
+    const sections = document.querySelectorAll(".disease-section");
 
-      const formData = new FormData(e.target);
-      const body = new URLSearchParams(formData);
-      const resultDiv = document.getElementById("result");
+    buttons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const page = btn.dataset.page;
+        sections.forEach(s => s.classList.remove("active"));
+        buttons.forEach(b => b.classList.remove("active"));
 
-      // Change this URL later to your Render backend URL
-      const BACKEND_URL = "https://YOUR-FLASK-APP.onrender.com/predict";
+        document.getElementById(page).classList.add("active");
+        btn.classList.add("active");
+      });
+    });
+
+    // Helper to show result
+    function showResult(formId, resultDiv, data) {
+      resultDiv.textContent = data.result || "No result";
+      resultDiv.className = "result ";
+      if (data.result?.includes("High")) resultDiv.classList.add("risk-high");
+      else if (data.result?.includes("Moderate")) resultDiv.classList.add("risk-moderate");
+      else resultDiv.classList.add("risk-low");
+    }
+
+    // Function to submit to backend
+    async function submitForm(form, formId, resultDiv) {
+      const formData = new FormData(form);
+      const BACKEND_URL = "https://ai-clinical-cdss-backend.onrender.com/predict"; // ← CHANGE TO YOUR RENDER URL
 
       try {
         const response = await fetch(BACKEND_URL, {
           method: "POST",
-          body,
+          body: new URLSearchParams(formData),
         });
 
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
         const data = await response.json();
-
-        if (data.result) {
-          resultDiv.textContent = data.result;
-          resultDiv.className =
-            data.result.includes("High") ? "risk-high" : "risk-low";
-        } else {
-          resultDiv.textContent = "Unexpected response.";
-          resultDiv.className = "risk-low";
-        }
+        showResult(formId, resultDiv, data);
       } catch (err) {
-        resultDiv.textContent = "Error: " + err.message;
-        resultDiv.className = "risk-high";
-      }
-    });
-  </script>
-</body>
-</html>
+        showResult(formId, resultDiv, {
+          result:
