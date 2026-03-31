@@ -2,8 +2,7 @@
   "rewrites": [
     {
       "source": "/(.*)",
-      "configuration": "maxAge=3600",
-      "destination": "/index.html"
+      "destination": "/"
     }
   ]
 }
