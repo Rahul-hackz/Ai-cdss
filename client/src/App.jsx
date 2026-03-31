@@ -259,6 +259,50 @@ function DoctorDashboard({ loggedInDoctor }) {
     </div>
   );
 }
+
+// ==========================================
+// 4. PATIENT MODULE
+// ==========================================
+function PatientPortal({ setLoggedInPatient }) {
+  const [isLogin, setIsLogin] = useState(true);
+  const [formData, setFormData] = useState({ patient_no: '', dob: '', name: '' });
+  const [status, setStatus] = useState({ type: '', message: '' });
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const endpoint = isLogin ? 'https://ai-cdss-backend.onrender.com/api/patient/login' : 'https://ai-cdss-backend.onrender.com/api/patient/signup';
+      const response = await axios.post(endpoint, formData);
+      setStatus({ type: 'success', message: response.data.message });
+      if (isLogin) {
+        setLoggedInPatient(response.data.patient_id);
+        setTimeout(() => navigate('/patient/dashboard'), 1000);
+      } else {
+        setTimeout(() => setIsLogin(true), 1500);
+      }
+    } catch (error) { setStatus({ type: 'error', message: "Login Failed." }); }
+  };
+
+  return (
+    <div className="flex justify-center items-center mt-12 px-4 animate-fade-in">
+      <div className="bg-white/5 backdrop-blur-[20px] border border-white/10 rounded-2xl p-10 w-full max-w-lg shadow-[0_4px_40px_rgba(46,160,67,0.15)]">
+        <div className="text-center mb-8"><Lock className="mx-auto mb-4 text-[#2ea043]" size={48} /><h2 className="text-3xl font-semibold text-white">Patient Access</h2></div>
+        <div className="flex bg-[#050609] rounded-lg p-1 mb-6 border border-white/10">
+          <button type="button" onClick={() => setIsLogin(true)} className={`flex-1 py-2 text-sm font-bold rounded-md ${isLogin ? 'bg-[#2ea043] text-white' : 'text-[#8b949e]'}`}>Login</button>
+          <button type="button" onClick={() => setIsLogin(false)} className={`flex-1 py-2 text-sm font-bold rounded-md ${!isLogin ? 'bg-[#2ea043] text-white' : 'text-[#8b949e]'}`}>Register</button>
+        </div>
+        {status.message && <div className="p-3 rounded-lg mb-6 text-sm bg-black/20 text-white border border-white/10">{status.message}</div>}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input type="text" name="patient_no" placeholder="Patient Number (e.g. PT-1001)" onChange={(e) => setFormData({...formData, patient_no: e.target.value})} required className="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-4 py-3 text-white focus:border-[#2ea043]" />
+          {!isLogin && <input type="text" name="name" placeholder="Full Name" onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-4 py-3 text-white focus:border-[#2ea043]" />}
+          <input type="date" name="dob" onChange={(e) => setFormData({...formData, dob: e.target.value})} required className="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-4 py-3 text-white focus:border-[#2ea043]" />
+          <button type="submit" className="w-full bg-gradient-to-r from-[#2ea043] to-[#3fb950] text-white font-bold py-3 rounded-lg mt-6">{isLogin ? 'View Records' : 'Register'}</button>
+        </form>
+      </div>
+    </div>
+  );
+}
 // ==========================================
 // 4. PATIENT MODULE (Upgraded with PDF Maker)
 // ==========================================
