@@ -247,10 +247,11 @@ function DoctorDashboard({ loggedInDoctor }) {
                 </div>
                 <p className="text-sm">Risk Level: <strong>{report.risk_level}</strong> | Specialist: {report.recommended_specialist}</p>
               </div>
-              <div className="bg-white/5 p-4 rounded-xl">
-                <p className="text-sm text-[#8b949e] mb-2">Suggested Precautions:</p>
-                <ul className="text-sm text-[#c9d1d9] list-disc pl-5">{report.precautions.map((p,i) => <li key={i}>{p}</li>)}</ul>
-              </div>
+            {/* NEW SAFE CODE */}
+<div className="bg-white/5 p-4 rounded-xl">
+  <p className="text-sm text-[#a371f7] font-bold mb-2">AI Summary:</p>
+  <p className="text-sm text-[#c9d1d9] leading-relaxed">{report.ai_summary}</p>
+</div>
             </div>
           )}
         </div>
