@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { Activity, Shield, User, BrainCircuit, CheckCircle2, ShieldCheck, Clock, LineChart, Lock, ShieldAlert, AlertTriangle, Zap, Code, Database, Server, ChevronDown, Stethoscope, FileText, CheckCircle, Download, Calendar, Users, Info, ArrowRight, Pill, LogOut, Search, X } from 'lucide-react';
 import axios from 'axios';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 // ==========================================
 // 1. HOME PAGE (Upgraded)
@@ -256,53 +258,12 @@ function DoctorDashboard({ loggedInDoctor }) {
     </div>
   );
 }
-
 // ==========================================
-// 4. PATIENT MODULE
+// 4. PATIENT MODULE (Upgraded with PDF Maker)
 // ==========================================
-function PatientPortal({ setLoggedInPatient }) {
-  const [isLogin, setIsLogin] = useState(true);
-  const [formData, setFormData] = useState({ patient_no: '', dob: '', name: '' });
-  const [status, setStatus] = useState({ type: '', message: '' });
-  const navigate = useNavigate();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const endpoint = isLogin ? 'https://ai-cdss-backend.onrender.com/api/patient/login' : 'https://ai-cdss-backend.onrender.com/api/patient/signup';
-      const response = await axios.post(endpoint, formData);
-      setStatus({ type: 'success', message: response.data.message });
-      if (isLogin) {
-        setLoggedInPatient(response.data.patient_id);
-        setTimeout(() => navigate('/patient/dashboard'), 1000);
-      } else {
-        setTimeout(() => setIsLogin(true), 1500);
-      }
-    } catch (error) { setStatus({ type: 'error', message: "Login Failed." }); }
-  };
-
-  return (
-    <div className="flex justify-center items-center mt-12 px-4 animate-fade-in">
-      <div className="bg-white/5 backdrop-blur-[20px] border border-white/10 rounded-2xl p-10 w-full max-w-lg shadow-[0_4px_40px_rgba(46,160,67,0.15)]">
-        <div className="text-center mb-8"><Lock className="mx-auto mb-4 text-[#2ea043]" size={48} /><h2 className="text-3xl font-semibold text-white">Patient Access</h2></div>
-        <div className="flex bg-[#050609] rounded-lg p-1 mb-6 border border-white/10">
-          <button type="button" onClick={() => setIsLogin(true)} className={`flex-1 py-2 text-sm font-bold rounded-md ${isLogin ? 'bg-[#2ea043] text-white' : 'text-[#8b949e]'}`}>Login</button>
-          <button type="button" onClick={() => setIsLogin(false)} className={`flex-1 py-2 text-sm font-bold rounded-md ${!isLogin ? 'bg-[#2ea043] text-white' : 'text-[#8b949e]'}`}>Register</button>
-        </div>
-        {status.message && <div className="p-3 rounded-lg mb-6 text-sm bg-black/20 text-white border border-white/10">{status.message}</div>}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input type="text" name="patient_no" placeholder="Patient Number (e.g. PT-1001)" onChange={(e) => setFormData({...formData, patient_no: e.target.value})} required className="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-4 py-3 text-white focus:border-[#2ea043]" />
-          {!isLogin && <input type="text" name="name" placeholder="Full Name" onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-4 py-3 text-white focus:border-[#2ea043]" />}
-          <input type="date" name="dob" onChange={(e) => setFormData({...formData, dob: e.target.value})} required className="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-4 py-3 text-white focus:border-[#2ea043]" />
-          <button type="submit" className="w-full bg-gradient-to-r from-[#2ea043] to-[#3fb950] text-white font-bold py-3 rounded-lg mt-6">{isLogin ? 'View Records' : 'Register'}</button>
-        </form>
-      </div>
-    </div>
-  );
-}
-
 function PatientDashboard({ loggedInPatient }) {
   const [reports, setReports] = useState([]);
+  const [isDownloading, setIsDownloading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -312,6 +273,37 @@ function PatientDashboard({ loggedInPatient }) {
     }
   }, [loggedInPatient]);
 
+  // --- PDF GENERATOR FUNCTION ---
+  const downloadPDF = async (reportId, diseaseName) => {
+    setIsDownloading(true);
+    const element = document.getElementById(`pdf-report-${reportId}`);
+    
+    try {
+      // Temporarily alter styles for a clean PDF (white background, black text)
+      element.classList.add('pdf-mode');
+      
+      const canvas = await html2canvas(element, { 
+        scale: 2, // High resolution
+        useCORS: true,
+        backgroundColor: '#ffffff'
+      });
+      
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`Vitalis_Medical_Report_${diseaseName.replace(/\s+/g, '_')}.pdf`);
+    } catch (error) {
+      console.error("PDF Generation failed", error);
+      alert("Failed to generate PDF.");
+    } finally {
+      element.classList.remove('pdf-mode');
+      setIsDownloading(false);
+    }
+  };
+
   if (!loggedInPatient) return <div className="text-center mt-20 text-white">Please log in first.<br/><button onClick={()=>navigate('/patient')} className="mt-4 text-[#2ea043] underline">Go to Login</button></div>;
 
   return (
@@ -320,18 +312,86 @@ function PatientDashboard({ loggedInPatient }) {
         <User className="text-[#2ea043]" size={36}/>
         <div><h2 className="text-2xl font-bold text-white">My Medical Records</h2><p className="text-[#8b949e]">Patient ID: {loggedInPatient}</p></div>
       </div>
+      
       {reports.length === 0 ? <div className="text-center py-12 text-[#8b949e]">No records found. Visit your doctor for an analysis.</div> : 
         reports.map((r, idx) => (
-          <div key={idx} className="bg-[#050609] border border-white/10 rounded-xl p-6">
-            <div className="flex justify-between items-center mb-4 border-b border-white/5 pb-4">
-              <h3 className="text-xl font-bold text-white">{r.predicted_disease}</h3>
-              <span className="text-sm text-[#8b949e]">{r.created_at}</span>
-            </div>
-            <div className="grid grid-cols-2 gap-4 text-sm text-[#c9d1d9] mb-4">
-              <p>Risk Level: <strong className="text-white">{r.risk_level}</strong></p>
-              <p>Confidence: <strong className="text-white">{r.confidence_score}%</strong></p>
-              <p>Specialist: <strong className="text-white">{r.recommended_specialist}</strong></p>
-              <p>Symptoms: <strong className="text-white">{r.symptoms_input}</strong></p>
+          <div key={idx} className="bg-[#050609] border border-white/10 rounded-xl overflow-hidden shadow-lg relative">
+            
+            {/* DOWNLOAD BUTTON */}
+            <button 
+              onClick={() => downloadPDF(r.id, r.predicted_disease)}
+              disabled={isDownloading}
+              className="absolute top-4 right-4 z-10 bg-[#2ea043] hover:bg-[#3fb950] text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-bold transition-all"
+            >
+              <Download size={16} />
+              {isDownloading ? 'Generating...' : 'Download PDF'}
+            </button>
+
+            {/* THE PRINTABLE AREA (This is what the PDF captures) */}
+            <div id={`pdf-report-${r.id}`} className="p-8 bg-[#0d1117] text-[#c9d1d9] transition-colors duration-300">
+              
+              {/* PDF Letterhead */}
+              <div className="border-b border-white/10 pb-6 mb-6 flex justify-between items-start">
+                <div>
+                  <h1 className="text-3xl font-extrabold text-white flex items-center gap-2">
+                    <Activity className="text-[#2ea043]" size={28} /> Vitalis AI
+                  </h1>
+                  <p className="text-sm mt-1">Advanced Clinical Decision Support</p>
+                </div>
+                <div className="text-right text-sm">
+                  <p><strong>Date:</strong> {new Date(r.created_at).toLocaleDateString()}</p>
+                  <p><strong>Report ID:</strong> #{r.id}</p>
+                  <p><strong>Consulting Dr. ID:</strong> {r.doctor_id}</p>
+                </div>
+              </div>
+
+              {/* Diagnosis Banner */}
+              <div className="mb-6">
+                <h3 className="text-sm text-[#8b949e] uppercase tracking-wider font-bold mb-1">Primary Prediction</h3>
+                <h2 className="text-2xl font-bold text-white">{r.predicted_disease}</h2>
+              </div>
+
+              {/* Data Grid */}
+              <div className="grid grid-cols-2 gap-6 mb-6">
+                <div className="bg-white/5 p-4 rounded-lg border border-white/5">
+                  <p className="text-sm text-[#8b949e] mb-1">Risk Level</p>
+                  <p className={`text-lg font-bold ${r.risk_level === 'High' ? 'text-[#f85149]' : r.risk_level === 'Medium' ? 'text-[#d29922]' : 'text-[#2ea043]'}`}>
+                    {r.risk_level} Risk
+                  </p>
+                </div>
+                <div className="bg-white/5 p-4 rounded-lg border border-white/5">
+                  <p className="text-sm text-[#8b949e] mb-1">AI Confidence Score</p>
+                  <p className="text-lg font-bold text-white">{r.confidence_score}%</p>
+                </div>
+              </div>
+
+              {/* AI Summary & Symptoms */}
+              <div className="space-y-4 mb-8">
+                <div>
+                  <p className="text-sm text-[#8b949e] mb-1 font-bold">Reported Symptoms:</p>
+                  <p className="text-sm capitalize">{r.symptoms_input}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-[#8b949e] mb-1 font-bold">AI Summary:</p>
+                  <p className="text-sm leading-relaxed">{r.ai_summary}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-[#8b949e] mb-1 font-bold">Recommended Action:</p>
+                  <p className="text-sm">Please consult a <strong>{r.recommended_specialist}</strong> for official diagnosis and treatment.</p>
+                </div>
+              </div>
+
+              {/* Footer Signature */}
+              <div className="border-t border-white/10 pt-6 flex justify-between items-end mt-12">
+                <div className="text-xs text-[#8b949e] max-w-sm">
+                  *This report was generated by an AI assistant and does not constitute official medical advice. Always consult a licensed physician.
+                </div>
+                <div className="text-center">
+                  <div className="w-40 border-b border-[#8b949e] mb-2"></div>
+                  <p className="text-sm text-[#8b949e]">Authorized Signature</p>
+                </div>
+              </div>
+
             </div>
           </div>
         ))

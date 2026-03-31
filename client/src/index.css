@@ -1,1 +1,13 @@
 @import "tailwindcss";
+/* Special classes to make the PDF look like a physical paper document */
+.pdf-mode {
+  background-color: white !important;
+  color: black !important;
+}
+.pdf-mode * {
+  color: black !important;
+  border-color: #e5e7eb !important;
+}
+.pdf-mode .bg-white\/5 {
+  background-color: #f3f4f6 !important;
+}
